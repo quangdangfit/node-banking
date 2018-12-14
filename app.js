@@ -6,6 +6,8 @@ var express = require('express'),
 
 var app = express();
 
+var userCtrl = require('./apiControllers/userControllers');
+
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -16,6 +18,8 @@ app.get('/', (req, res) => {
         msg: 'hello from nodejs express api'
     })
 });
+
+app.use('/users/', userCtrl);
 
 var port = process.env.PORT || 3000;
 app.listen(port, () => {
