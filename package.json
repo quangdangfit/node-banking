@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This is the back-end for internet banking project, will be set up by nodeJS tech and sth other",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BockChain-Project/BackEnd-BlockChain-RestFul.git"
+  },
+  "author": "Nguyen Dang Quang, Tran Duy Phuong, Dang Phuoc Quang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BockChain-Project/BackEnd-BlockChain-RestFul/issues"
+  },
+  "homepage": "https://github.com/BockChain-Project/BackEnd-BlockChain-RestFul#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1"
+  }
+}
