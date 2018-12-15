@@ -5,7 +5,7 @@ var moment = require('moment');
 var kn = require('../fn/db');
 
 const SECRET = 'ABCDEF';
-const AC_LIFETIME = 600; // seconds
+const AC_LIFETIME = 1200; // seconds
 
 exports.generateAccessToken = input => {
   var payload = {
@@ -19,8 +19,6 @@ exports.generateAccessToken = input => {
 
 exports.verifyAccessToken = (req, res, next) => {
   var access_token = req.headers['x-access-token'];
-  console.log(access_token);
-
   if (access_token) {
     jwt.verify(access_token, SECRET, (err, payload) => {
       if (err) {
@@ -57,7 +55,7 @@ exports.insertRefreshToken = (uid, refresh_token) => {
     .insert({
       'uid': uid,
       'refresh_token': refresh_token,
-      'create_at': moment().format('YYYY-MM-DD HH:mm:ss')
+      'create_at': moment().format(process.env.DATETIME_FORMAT)
     })
     .returning('uid')
 };
@@ -67,6 +65,6 @@ exports.updateRefreshToken = (uid, refresh_token) => {
     .where('uid', uid)
     .update({
       'refresh_token': refresh_token,
-      'write_at': moment().format('YYYY-MM-DD HH:mm:ss')
+      'write_at': moment().format(process.env.DATETIME_FORMAT)
     }, [uid]);
 };
