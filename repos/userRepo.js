@@ -1,14 +1,15 @@
 var md5 = require('crypto-js/md5');
 var kn = require('../fn/db');
 
-exports.list = () => kn('users').select('uid', 'username', 'first_name', 'last_name', 'email', 'phone');
+exports.list = () => kn('users').select('uid', 'username', 'first_name', 'last_name', 'email', 'phone', 'role');
 
 exports.single = uid => kn('users')
-  .select('uid', 'username', 'first_name', 'last_name', 'email', 'phone')
+  .select('uid', 'username', 'first_name', 'last_name', 'email', 'phone', 'role')
   .where('uid', uid)
   .first();
 
 exports.add = input => {
+  input.role = 3;
   input.password = md5(input.password).toString();
   return kn('users').insert(input).returning('uid')
 };
@@ -23,7 +24,7 @@ exports.update = (uid, input) => kn('users')
 
 exports.login = (input) => {
   var md5_pwd = md5(input.password).toString();
-  return kn('users').select('uid', 'username', 'first_name', 'last_name', 'email', 'phone').where({
+  return kn('users').select('uid', 'username', 'first_name', 'last_name', 'email', 'phone', 'role').where({
     'username': input.username,
     'password': md5_pwd
   }).first()
