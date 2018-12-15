@@ -2,10 +2,11 @@ var express = require('express');
 
 var userRepo = require('../repos/userRepo');
 var authRepo = require('../repos/authRepo');
+var verifyStaff = require('../repos/staffRepo').verifyStaff;
 
 var router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', verifyStaff, (req, res) => {
   userRepo.list().then((rows) => {
     res.json({
       users: rows
@@ -15,16 +16,7 @@ router.get('/', (req, res) => {
   })
 });
 
-router.get('/:id', (req, res) => {
-  var id = req.params.id;
-  userRepo.single(id).then((row) => {
-    res.json(row)
-  }).catch((err) => {
-    throw err
-  })
-});
-
-router.post('/', (req, res) => {
+router.post('/', verifyStaff, (req, res) => {
   userRepo.add(req.body).then((uid) => {
     if (uid) {
       res.json({
@@ -71,6 +63,20 @@ router.post('/login', (req, res) => {
         });
     }
   });
+});
+
+router.get('/:id', verifyStaff, (req, res) => {
+  var id = +req.params.id;
+  if (id) {
+    userRepo.single(id).then((row) => {
+      res.json(row)
+    }).catch((err) => {
+      throw err
+    })
+  } else{
+    res.statusCode = 404;
+    res.end('Not Found');
+  }
 });
 
 module.exports = router;

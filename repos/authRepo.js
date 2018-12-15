@@ -4,8 +4,8 @@ var moment = require('moment');
 
 var kn = require('../fn/db');
 
-const SECRET = 'ABCDEF';
-const AC_LIFETIME = 1200; // seconds
+const SECRET = process.env.SECRET_KEY || 'QWERTYUIOP';
+const AC_LIFETIME = parseInt(process.env.ACCESS_TOKEN_LIFETIME) || 1200; // seconds
 
 exports.generateAccessToken = input => {
   var payload = {
