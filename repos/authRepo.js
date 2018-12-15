@@ -68,3 +68,8 @@ exports.updateRefreshToken = (uid, refresh_token) => {
       'write_at': moment().format(process.env.DATETIME_FORMAT)
     }, [uid]);
 };
+
+exports.checkRefreshToken = refresh_token => kn('users_token')
+  .select('uid')
+  .where('refresh_token', refresh_token)
+  .first();
