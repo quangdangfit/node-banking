@@ -8,6 +8,7 @@ var app = express();
 
 var userCtrl = require('./apiControllers/userControllers');
 var accountCtrl = require('./apiControllers/accountControllers');
+var authCtrl = require('./apiControllers/authController');
 
 var verifyAccessToken = require('./repos/authRepo').verifyAccessToken;
 
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
 
 app.use('/users/', userCtrl);
 app.use('/accounts/', verifyAccessToken, accountCtrl);
+app.use('/oauth/', authCtrl);
 
 var port = process.env.PORT || 3000;
 app.listen(port, () => {
