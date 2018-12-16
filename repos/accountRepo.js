@@ -1,11 +1,16 @@
 var kn = require('../fn/db');
 var moment = require('moment');
 
-exports.list = uid => kn('users_account').select('uid', 'account_number', 'balance').where('uid', uid);
+exports.list = uid => kn('users_account').select('*').where('uid', uid);
 
 exports.single = id => kn('users_account')
-  .select('uid', 'account_number', 'balance')
+  .select('*')
   .where('id', id)
+  .first();
+
+exports.singleByAccNumber = account_number => kn('users_account')
+  .select('*')
+  .where('account_number', account_number)
   .first();
 
 exports.add = input => {
@@ -21,14 +26,16 @@ exports.delete = id => kn('users_account')
 
 exports.update = (id, input) => kn('users_account')
   .where('id', id)
-  .update(input);
+  .update(input, ['id']);
 
 exports.maxAccNumber = () => kn('users_account')
   .max('account_number as account_number')
   .first();
 
-exports.recharge = (id, balance) => {
+exports.updateBalance = (id, balance) => {
   return kn('users_account')
     .where('id', id)
-    .update('balance', balance)
+    .update({
+      'balance': balance
+    }, ['id'])
 };

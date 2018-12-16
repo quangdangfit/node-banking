@@ -59,17 +59,17 @@ router.put('/:id/balance/', verifyStaff, (req, res) => {
   var id = +req.params.id;
 
   if (id) {
-    accountRepo.single(id).then((row) => {
-      req.body.balance = parseInt(row.balance) + parseInt(req.body.amount);
-      if (req.body.balance > 0) {
-        accountRepo.recharge(id, req.body.balance).then((row) => {
+    accountRepo.single(id).then((account) => {
+      if (parseInt(req.body.amount) > 0) {
+        req.body.balance = parseInt(account.balance) + parseInt(req.body.amount);
+        accountRepo.updateBalance(id, req.body.balance).then((row) => {
           res.json({
-            msg: 'Balance is updated!'
+            msg: `Balance ${row.id} is updated!`
           })
         })
       } else {
         res.json({
-          msg: 'Balance is not enough!'
+          msg: 'Amount must be greater than zero!'
         })
       }
     }).catch((err) => {
