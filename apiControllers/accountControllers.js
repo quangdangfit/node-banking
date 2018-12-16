@@ -1,5 +1,6 @@
 var express = require('express');
 var accountRepo = require('../repos/accountRepo');
+var verifyStaff = require('../repos/staffRepo').verifyStaff;
 
 var router = express.Router();
 
@@ -10,15 +11,6 @@ router.get('/', (req, res) => {
       uid: uid,
       accounts: rows
     })
-  }).catch((err) => {
-    throw err
-  })
-});
-
-router.get('/:id', (req, res) => {
-  var id = req.params.id;
-  accountRepo.single(id).then((row) => {
-    res.json(row)
   }).catch((err) => {
     throw err
   })
@@ -40,6 +32,53 @@ router.post('/', (req, res) => {
       }
     });
   });
+});
+
+router.get('/:id', (req, res) => {
+  var id = +req.params.id;
+
+  if (id) {
+    accountRepo.single(id).then((row) => {
+      if (req.token_payload.user.uid === row.uid) {
+        res.json(row)
+      } else {
+        res.json({
+          msg: 'USER IS NOT ALLOWED'
+        })
+      }
+    }).catch((err) => {
+      throw err
+    })
+  } else {
+    res.statusCode = 404;
+    res.end('Not Found');
+  }
+});
+
+router.put('/:id/balance/', verifyStaff, (req, res) => {
+  var id = +req.params.id;
+
+  if (id) {
+    accountRepo.single(id).then((row) => {
+      req.body.balance = parseInt(row.balance) + parseInt(req.body.amount);
+      if (req.body.balance > 0) {
+        accountRepo.recharge(id, req.body.balance).then((row) => {
+          res.json({
+            msg: 'Balance is updated!'
+          })
+        })
+      } else {
+        res.json({
+          msg: 'Balance is not enough!'
+        })
+      }
+    }).catch((err) => {
+      throw err
+    })
+  } else {
+    res.statusCode = 404;
+    res.end('Not Found');
+  }
 });
 
 module.exports = router;

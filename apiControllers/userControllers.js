@@ -61,6 +61,10 @@ router.post('/login', (req, res) => {
           res.statusCode = 500;
           res.end('View error log on console');
         });
+    } else {
+      res.json({
+        msg: `Failed to login!`
+      })
     }
   });
 });
@@ -73,7 +77,7 @@ router.get('/:id', verifyStaff, (req, res) => {
     }).catch((err) => {
       throw err
     })
-  } else{
+  } else {
     res.statusCode = 404;
     res.end('Not Found');
   }
