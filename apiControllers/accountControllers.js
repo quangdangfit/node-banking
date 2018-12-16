@@ -39,17 +39,12 @@ router.get('/:id', (req, res) => {
 
   if (id) {
     accountRepo.single(id).then((account) => {
-      if (account) {
-        if (req.token_payload.user.uid === account.uid) {
-          res.json(account)
-        } else {
-          res.json({
-            msg: 'NOT ALLOWED'
-          })
-        }
+      if (req.token_payload.user.uid === account.uid) {
+        res.json(account)
       } else {
-        res.statusCode = 404;
-        res.end('Not Found');
+        res.json({
+          msg: 'NOT ALLOWED'
+        })
       }
     }).catch((err) => {
       throw err
