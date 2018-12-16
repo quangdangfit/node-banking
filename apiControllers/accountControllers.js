@@ -38,13 +38,54 @@ router.get('/:id', (req, res) => {
   var id = +req.params.id;
 
   if (id) {
-    accountRepo.single(id).then((row) => {
-      if (req.token_payload.user.uid === row.uid) {
-        res.json(row)
+    accountRepo.single(id).then((account) => {
+      if (account) {
+        if (req.token_payload.user.uid === account.uid) {
+          res.json(account)
+        } else {
+          res.json({
+            msg: 'NOT ALLOWED'
+          })
+        }
       } else {
-        res.json({
-          msg: 'USER IS NOT ALLOWED'
-        })
+        res.statusCode = 404;
+        res.end('Not Found');
+      }
+    }).catch((err) => {
+      throw err
+    })
+  } else {
+    res.statusCode = 404;
+    res.end('Not Found');
+  }
+});
+
+router.delete('/:id', (req, res) => {
+  var id = +req.params.id;
+
+  if (id) {
+    accountRepo.single(id).then((account) => {
+      if (account) {
+        if (req.token_payload.user.uid === account.uid) {
+          if (account.balance !== 0) {
+            res.json({
+              msg: 'Cannot delete an account! Balance must be equal to zero!'
+            })
+          } else {
+            accountRepo.delete(id).then(row => {
+              res.json({
+                msg: 'Deleted account!'
+              })
+            });
+          }
+        } else {
+          res.json({
+            msg: 'NOT ALLOWED'
+          })
+        }
+      } else {
+        res.statusCode = 404;
+        res.end('Not Found');
       }
     }).catch((err) => {
       throw err
@@ -60,17 +101,22 @@ router.put('/:id/balance/', verifyStaff, (req, res) => {
 
   if (id) {
     accountRepo.single(id).then((account) => {
-      if (parseInt(req.body.amount) > 0) {
-        req.body.balance = parseInt(account.balance) + parseInt(req.body.amount);
-        accountRepo.updateBalance(id, req.body.balance).then((row) => {
-          res.json({
-            msg: `Balance ${row.id} is updated!`
+      if (account) {
+        if (parseInt(req.body.amount) > 0) {
+          req.body.balance = parseInt(account.balance) + parseInt(req.body.amount);
+          accountRepo.updateBalance(id, req.body.balance).then((row) => {
+            res.json({
+              msg: `Balance ${row.id} is updated!`
+            })
           })
-        })
+        } else {
+          res.json({
+            msg: 'Amount must be greater than zero!'
+          })
+        }
       } else {
-        res.json({
-          msg: 'Amount must be greater than zero!'
-        })
+        res.statusCode = 404;
+        res.end('Account Not Found');
       }
     }).catch((err) => {
       throw err
