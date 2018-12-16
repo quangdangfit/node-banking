@@ -5,6 +5,34 @@ var transferRepo = require('../repos/transferRepo');
 
 var router = express.Router();
 
+router.get('/', (req, res) => {
+  account_number = req.query.account;
+  uid = req.token_payload.user.uid;
+
+  accountRepo.singleByAccNumber(account_number)
+    .then(account => {
+      if (account.uid === uid) {
+        transferRepo.list(account_number).then((rows) => {
+          res.json({
+            account_number: account_number,
+            transfers_log: rows
+          })
+        }).catch((err) => {
+          throw err
+        })
+      } else {
+        res.json({
+          msg: 'Not allowed!'
+        })
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end('View error log on console');
+    });
+});
+
 router.post('/', (req, res) => {
   if (!(req.body.src_account && req.body.dest_account && req.body.amount > 0 && req.body.free_type)) {
     res.json({
@@ -15,7 +43,7 @@ router.post('/', (req, res) => {
       .then((src_account) => {
           if (src_account.uid !== req.token_payload.user.uid) {
             res.json({
-              msg: 'User are not allowed!'
+              msg: 'Not allowed!'
             })
           } else {
             var src_balance = parseInt(src_account.balance) - parseInt(req.body.amount);
@@ -46,8 +74,10 @@ router.post('/', (req, res) => {
           }
         }
       )
-      .catch((err) => {
-        throw err
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end('View error log on console');
       });
   }
 })
