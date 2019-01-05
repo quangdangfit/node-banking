@@ -13,6 +13,11 @@ exports.getUserByUsername = username => kn('users')
   .where('username', username)
   .first();
 
+exports.getUserByEmail = email => kn('users')
+  .select('uid', 'username', 'first_name', 'last_name', 'email', 'phone', 'role')
+  .where('email', email)
+  .first();
+
 exports.add = input => {
   input.role = 3;
   input.password = md5(input.password).toString();
