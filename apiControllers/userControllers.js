@@ -34,11 +34,20 @@ router.post('/', verifyStaff, (req, res) => {
             msg: `Username is already used!`
           })
         } else {
-          userRepo.add(req.body).then((uid) => {
-            if (uid) {
+          userRepo.getUserByEmail(req.body.email).then((row) => {
+            if (row) {
+              res.statusCode = 403;
               res.json({
-                msg: `Added user!`
+                msg: `Email is already used!`
               })
+            } else {
+              userRepo.add(req.body).then((uid) => {
+                if (uid) {
+                  res.json({
+                    msg: `Added user!`
+                  })
+                }
+              });
             }
           });
         }
