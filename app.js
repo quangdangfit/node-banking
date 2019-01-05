@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 
 app.use('/users/', userCtrl);
 app.use('/accounts/', verifyAccessToken, accountCtrl);
-app.use('/oauth/', authCtrl);
+app.use('/auth/', authCtrl);
 app.use('/transfers/', verifyAccessToken, transferCtrl);
 app.use('/otp/', verifyAccessToken, otpCtrl);
 

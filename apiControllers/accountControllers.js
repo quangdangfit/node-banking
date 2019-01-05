@@ -17,7 +17,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  req.body.uid = req.token_payload.user.uid;
   accountRepo.maxAccNumber().then(row => {
     if (row.account_number) {
       req.body.account_number = row.account_number + 1

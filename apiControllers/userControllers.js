@@ -1,4 +1,5 @@
 var express = require('express');
+var verifier = require('email-verify');
 
 var userRepo = require('../repos/userRepo');
 var authRepo = require('../repos/authRepo');
@@ -17,11 +18,20 @@ router.get('/', verifyStaff, (req, res) => {
 });
 
 router.post('/', verifyStaff, (req, res) => {
-  userRepo.add(req.body).then((uid) => {
-    if (uid) {
+  verifier.verify(req.body.email, function (err, info) {
+    if (err || !info.success) {
+      res.statusCode = 403;
       res.json({
-        msg: `Added user!`
+        msg: `Invalid email!`
       })
+    } else {
+      userRepo.add(req.body).then((uid) => {
+        if (uid) {
+          res.json({
+            msg: `Added user!`
+          })
+        }
+      });
     }
   });
 });
