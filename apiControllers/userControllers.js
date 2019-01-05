@@ -13,7 +13,9 @@ router.get('/', verifyStaff, (req, res) => {
       users: rows
     })
   }).catch((err) => {
-    throw err
+    console.log(err);
+    res.statusCode = 500;
+    res.end('View error log on console');
   })
 });
 
@@ -25,12 +27,25 @@ router.post('/', verifyStaff, (req, res) => {
         msg: `Invalid email!`
       })
     } else {
-      userRepo.add(req.body).then((uid) => {
-        if (uid) {
+      userRepo.getUserByUsername(req.body.username).then((row) => {
+        if (row) {
+          res.statusCode = 403;
           res.json({
-            msg: `Added user!`
+            msg: `Username is already used!`
           })
+        } else {
+          userRepo.add(req.body).then((uid) => {
+            if (uid) {
+              res.json({
+                msg: `Added user!`
+              })
+            }
+          });
         }
+      }).catch((err) => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end('View error log on console');
       });
     }
   });
@@ -85,7 +100,9 @@ router.get('/:id', verifyStaff, (req, res) => {
     userRepo.single(id).then((row) => {
       res.json(row)
     }).catch((err) => {
-      throw err
+      console.log(err);
+      res.statusCode = 500;
+      res.end('View error log on console');
     })
   } else {
     res.statusCode = 404;
