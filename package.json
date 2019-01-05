@@ -22,6 +22,7 @@
     "cors": "^2.8.5",
     "crypto-js": "^3.1.9-1",
     "dotenv": "^6.2.0",
+    "email-verify": "^0.2.1",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.4.0",
     "knex": "^0.16.2",
