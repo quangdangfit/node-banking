@@ -7,6 +7,7 @@ router.get('/', (req, res) => {
   uid = req.token_payload.user.uid;
   recipientRepo.list(uid).then((rows) => {
     res.json({
+      uid: uid,
       recipients: rows
     })
   }).catch((err) => {
