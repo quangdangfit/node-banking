@@ -30,11 +30,17 @@ router.post('/', (req, res) => {
           from: process.env.BANK_EMAIL,
           to: email,
           subject: 'Internet Banking Verification Email',
-          html: `<p>Dear ${user_display_name},</p>
+          html: `<div style="font-size: 18px">
+          <p>Dear ${user_display_name},</p>
+          <p>This is OTP Number from Internet Banking to verify your transaction.</p>
           <h2>${otp}</h2>
-          <p>This code will expire 10 minutes after this email was sent</p>
-          <strong>Why you received this email</strong>
-          <p>Internet Banking service require you confirm your transaction.</p>`
+          <p>This OTP number will expire 
+           <strong>${parseInt(process.env.OTP_LIFE_TIME) / 60}</strong>
+           minutes after this email was sent.</p>
+          <p>Internet Banking service require you confirm your transaction. If you are having nay issues with your
+          account, please do not hesitate to contact us by replying this email.</p>
+          <br><p>Thanks,</p><p>Quang Dang</p>
+          </div>`
         };
 
         otpRepo.transporter.sendMail(mailOptions, function (error, info) {
