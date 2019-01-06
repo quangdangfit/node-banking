@@ -33,6 +33,21 @@ router.post('/', (req, res) => {
   });
 });
 
+router.get('/user/', (req, res) => {
+  uid = req.token_payload.user.uid;
+  account_number = parseInt(req.query.account_number);
+  accountRepo.getAccountInfo(account_number).then((rows) => {
+    res.json({
+      account_number: account_number,
+      userInfo: rows
+    })
+  }).catch((err) => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end('View error log on console');
+  })
+});
+
 router.get('/:id', (req, res) => {
   var id = +req.params.id;
 
