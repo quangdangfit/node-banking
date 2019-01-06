@@ -7,8 +7,8 @@ var otpRepo = require('../repos/otpVerificationRepo');
 var router = express.Router();
 
 router.get('/', (req, res) => {
-  account_number = req.query.account;
-  uid = req.token_payload.user.uid;
+  var account_number = req.query.account;
+  var uid = req.token_payload.user.uid;
 
   accountRepo.singleByAccNumber(account_number)
     .then(account => {
@@ -40,15 +40,17 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
-  if (!(req.body.src_account && req.body.dest_account && req.body.amount > 0)) {
+  var input = req.transaction_payload;
+
+  if (!(input.src_account && input.dest_account && input.amount > 0)) {
     res.json({
       msg: 'Input is invalid!'
     })
   } else {
-    if (!req.body.fee_type) {
-      req.body.fee_type = 1
+    if (!input.fee_type) {
+      input.fee_type = 1
     }
-    accountRepo.singleByAccNumber(req.body.src_account)
+    accountRepo.singleByAccNumber(input.src_account)
       .then((src_account) => {
           if (src_account) {
             if (src_account.uid !== req.token_payload.user.uid) {
@@ -56,23 +58,17 @@ router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
                 msg: 'Not allowed!'
               })
             } else {
-              var src_balance = parseInt(src_account.balance) - parseInt(req.body.amount);
-              if (parseInt(req.body.fee_type) === 2)
+              var src_balance = parseInt(src_account.balance) - parseInt(input.amount);
+              if (parseInt(input.fee_type) === 2)
                 src_balance -= parseInt(process.env.TRANSFER_FEE);
               if (src_balance > 0) {
                 accountRepo.updateBalance(src_account.id, src_balance).then((row) => {
-                  accountRepo.singleByAccNumber(req.body.dest_account).then(dest_account => {
+                  accountRepo.singleByAccNumber(input.dest_account).then(dest_account => {
                     if (dest_account) {
-                      var dest_balance = parseInt(dest_account.balance) + parseInt(req.body.amount);
-                      if (parseInt(req.body.fee_type) === 1)
+                      var dest_balance = parseInt(dest_account.balance) + parseInt(input.amount);
+                      if (parseInt(input.fee_type) === 1)
                         dest_balance -= parseInt(process.env.TRANSFER_FEE);
                       accountRepo.updateBalance(dest_account.id, dest_balance).then((row) => {
-                        input = {
-                          'src_account': req.body.src_account,
-                          'dest_account': req.body.dest_account,
-                          'amount': req.body.amount,
-                          'fee_type': req.body.fee_type
-                        };
                         transferRepo.add(input)
                           .then(row => {
                             res.json({

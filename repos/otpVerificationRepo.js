@@ -4,7 +4,11 @@ var jwt = require('jsonwebtoken');
 
 const SECRET = process.env.SECRET_KEY || 'QWERTYUIOP';
 const OTP_LIFE_TIME = parseInt(process.env.OTP_LIFE_TIME) || 600; // seconds
-authenticator.options = {step: OTP_LIFE_TIME,};
+
+authenticator.options = {
+  step: OTP_LIFE_TIME,
+  window: 1
+};
 
 exports.transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -45,7 +49,7 @@ exports.verifyTransactionToken = (req, res, next) => {
             error: err
           })
         } else {
-          req.transaction_payload = payload;
+          req.transaction_payload = payload.transaction;
           next();
         }
       });
