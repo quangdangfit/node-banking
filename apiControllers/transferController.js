@@ -20,7 +20,9 @@ router.get('/', (req, res) => {
               transfers_log: rows
             })
           }).catch((err) => {
-            throw err
+            console.log(err);
+            res.statusCode = 500;
+            res.end('View error log on console');
           })
         } else {
           res.json({
@@ -66,14 +68,14 @@ router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
                     })
                   } else {
                     var src_balance = parseInt(src_account.balance) - parseInt(input.amount);
-                    if (parseInt(input.fee_type) === 2)
+                    if (parseInt(input.fee_type) === 1)
                       src_balance -= parseInt(process.env.TRANSFER_FEE);
                     if (src_balance > 0) {
                       accountRepo.updateBalance(src_account.id, src_balance).then((row) => {
                         accountRepo.singleByAccNumber(input.dest_account).then(dest_account => {
                           if (dest_account) {
                             var dest_balance = parseInt(dest_account.balance) + parseInt(input.amount);
-                            if (parseInt(input.fee_type) === 1)
+                            if (parseInt(input.fee_type) === 2)
                               dest_balance -= parseInt(process.env.TRANSFER_FEE);
                             accountRepo.updateBalance(dest_account.id, dest_balance).then((row) => {
                               transferRepo.update(transfer_id, {state: 'done'}).then((row) => {
@@ -108,7 +110,7 @@ router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
         }
       } else {
         res.json({
-          msg: 'Not allowed!'
+          msg: 'Cant not verify otp again!'
         })
       }
     })

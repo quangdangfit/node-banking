@@ -5,7 +5,7 @@ var verifyStaff = require('../repos/staffRepo').verifyStaff;
 var router = express.Router();
 
 router.get('/', (req, res) => {
-  uid = req.token_payload.user.uid;
+  var uid = req.token_payload.user.uid;
   accountRepo.list(uid).then((rows) => {
     res.json({
       uid: uid,
@@ -19,6 +19,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  req.body.uid = req.token_payload.user.uid;
   accountRepo.maxAccNumber().then(row => {
     if (row.account_number) {
       req.body.account_number = row.account_number + 1
