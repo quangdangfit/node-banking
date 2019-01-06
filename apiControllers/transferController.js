@@ -76,9 +76,11 @@ router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
                             if (parseInt(input.fee_type) === 1)
                               dest_balance -= parseInt(process.env.TRANSFER_FEE);
                             accountRepo.updateBalance(dest_account.id, dest_balance).then((row) => {
-                              res.json({
-                                msg: 'Transfer is done!'
-                              })
+                              transferRepo.update(transfer_id, {state: 'done'}).then((row) => {
+                                res.json({
+                                  msg: 'Transfer is done!'
+                                })
+                              });
                             });
                           } else {
                             res.statusCode = 404;
