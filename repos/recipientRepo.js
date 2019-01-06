@@ -1,6 +1,6 @@
 var kn = require('../fn/db');
 
-exports.list = uid => kn('recipient_list').select('*').where('uid', uid);
+exports.list = uid => kn('recipient_list').select('name', 'account_number').where('uid', uid);
 
 exports.single = id => kn('recipient_list')
   .select('*')
