@@ -8,6 +8,12 @@ exports.single = id => kn('users_account')
   .where('id', id)
   .first();
 
+exports.getAccountInfo = account_number => kn('users_account')
+  .join('users', 'users_account.uid', '=', 'users.uid')
+  .select('users.username', 'users.first_name', 'users.last_name', 'users.email', )
+  .where('account_number', account_number)
+  .first();
+
 exports.singleByAccNumber = account_number => kn('users_account')
   .select('*')
   .where('account_number', account_number)
