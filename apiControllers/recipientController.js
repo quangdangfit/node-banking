@@ -33,4 +33,46 @@ router.post('/', (req, res) => {
     });
 });
 
+router.put('/:id', (req, res) => {
+  var id = +req.params.id;
+
+  if (id) {
+    recipientRepo.update(id)
+      .then(row => {
+        res.json({
+          msg: 'Updated recipient!'
+        })
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end('View error log on console');
+      });
+  } else {
+    res.statusCode = 404;
+    res.end('Not Found');
+  }
+});
+
+router.delete('/:id', (req, res) => {
+  var id = +req.params.id;
+
+  if (id) {
+    recipientRepo.delete(id)
+      .then(row => {
+        res.json({
+          msg: 'Deleted recipient!'
+        })
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end('View error log on console');
+      });
+  } else {
+    res.statusCode = 404;
+    res.end('Not Found');
+  }
+});
+
 module.exports = router;
