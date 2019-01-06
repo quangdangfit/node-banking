@@ -10,7 +10,7 @@ exports.single = id => kn('users_account')
 
 exports.getAccountInfo = account_number => kn('users_account')
   .join('users', 'users_account.uid', '=', 'users.uid')
-  .select('users.username', 'users.first_name', 'users.last_name', 'users.email', )
+  .select('users.username', 'users.first_name', 'users.last_name', 'users.email', 'users.phone')
   .where('account_number', account_number)
   .first();
 
