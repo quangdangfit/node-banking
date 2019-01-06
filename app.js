@@ -11,6 +11,7 @@ var accountCtrl = require('./apiControllers/accountControllers');
 var authCtrl = require('./apiControllers/authController');
 var transferCtrl = require('./apiControllers/transferController');
 var otpCtrl = require('./apiControllers/otpVerificationController');
+var recipientCtrl = require('./apiControllers/recipientController');
 
 var verifyAccessToken = require('./repos/authRepo').verifyAccessToken;
 
@@ -30,6 +31,7 @@ app.use('/accounts/', verifyAccessToken, accountCtrl);
 app.use('/auth/', authCtrl);
 app.use('/transfers/', verifyAccessToken, transferCtrl);
 app.use('/otp/', verifyAccessToken, otpCtrl);
+app.use('/recipients/', verifyAccessToken, recipientCtrl);
 
 var port = process.env.PORT || 3000;
 app.listen(port, () => {
