@@ -12,7 +12,9 @@ router.get('/', (req, res) => {
       accounts: rows
     })
   }).catch((err) => {
-    throw err
+    console.log(err);
+    res.statusCode = 500;
+    res.end('View error log on console');
   })
 });
 
@@ -34,8 +36,7 @@ router.post('/', (req, res) => {
 });
 
 router.get('/user/', (req, res) => {
-  uid = req.token_payload.user.uid;
-  account_number = parseInt(req.query.account_number);
+  var account_number = parseInt(req.query.account_number);
   accountRepo.getAccountInfo(account_number).then((rows) => {
     res.json({
       account_number: account_number,
@@ -61,7 +62,9 @@ router.get('/:id', (req, res) => {
         })
       }
     }).catch((err) => {
-      throw err
+      console.log(err);
+      res.statusCode = 500;
+      res.end('View error log on console');
     })
   } else {
     res.statusCode = 404;
@@ -97,7 +100,9 @@ router.delete('/:id', (req, res) => {
         res.end('Not Found');
       }
     }).catch((err) => {
-      throw err
+      console.log(err);
+      res.statusCode = 500;
+      res.end('View error log on console');
     })
   } else {
     res.statusCode = 404;
@@ -128,7 +133,9 @@ router.put('/:id/balance/', verifyStaff, (req, res) => {
         res.end('Account Not Found');
       }
     }).catch((err) => {
-      throw err
+      console.log(err);
+      res.statusCode = 500;
+      res.end('View error log on console');
     })
   } else {
     res.statusCode = 404;
