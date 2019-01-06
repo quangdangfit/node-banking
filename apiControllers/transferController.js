@@ -102,7 +102,6 @@ router.post('/', (req, res) => {
         res.end('View error log on console');
       });
   }
-})
-;
+});
 
 module.exports = router;

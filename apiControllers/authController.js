@@ -14,7 +14,7 @@ router.get('/access', (req, res) => {
         userRepo.single(row.uid).then(user_info => {
           res.json({
             auth: true,
-            access_token: authRepo.generateAccessToken(user_info)
+            transaction_token: authRepo.generateAccessToken(user_info)
           })
         });
       } else {
