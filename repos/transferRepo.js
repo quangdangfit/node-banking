@@ -5,7 +5,7 @@ exports.list = src_account => kn('transfers').select('*').where({'src_account': 
 
 exports.single = id => kn('transfers')
   .select('*')
-  .where({'id': id})
+  .where({'id': id, 'state': 'to confirm'})
   .first();
 
 exports.add = input => {
@@ -14,3 +14,7 @@ exports.add = input => {
     .insert(input)
     .returning(['id']);
 };
+
+exports.update = (id, input) => kn('transfers')
+  .where('id', id)
+  .update(input, ['id']);
