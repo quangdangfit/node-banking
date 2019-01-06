@@ -1,8 +1,10 @@
+var authenticator = require('otplib').authenticator;
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
 
 const SECRET = process.env.SECRET_KEY || 'QWERTYUIOP';
-const AC_LIFETIME = parseInt(process.env.ACCESS_TOKEN_LIFETIME) || 1200; // seconds
+const OTP_LIFE_TIME = parseInt(process.env.OTP_LIFE_TIME) || 600; // seconds
+authenticator.options = {step: OTP_LIFE_TIME,};
 
 exports.transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -18,31 +20,42 @@ exports.generateTransactionToken = input => {
     info: 'This token will be used to verify transaction!'
   };
   return jwt.sign(payload, SECRET, {
-    expiresIn: AC_LIFETIME
+    expiresIn: OTP_LIFE_TIME
   });
 };
 
 exports.verifyTransactionToken = (req, res, next) => {
   var transaction_token = req.body.transaction_token;
+  const isValid = authenticator.check(parseInt(req.body.otp), transaction_token);
 
-  if (transaction_token) {
-    jwt.verify(transaction_token, SECRET, (err, payload) => {
-      if (err) {
-        res.statusCode = 401;
-        res.json({
-          msg: 'INVALID TRANSACTION TOKEN',
-          error: err
-        })
-      } else {
-        req.token_payload = payload;
-        next();
-      }
-    });
+  if (!isValid) {
+    console.log(``);
+
+    res.statusCode = 404;
+    res.end('INVALID OTP');
   } else {
-    res.statusCode = 403;
-    res.json({
-      msg: 'NOT FOUND TRANSACTION TOKEN'
-    })
+    console.log('Verify OTP successfully!');
+
+    if (transaction_token) {
+      jwt.verify(transaction_token, SECRET, (err, payload) => {
+        if (err) {
+          res.statusCode = 401;
+          res.json({
+            msg: 'INVALID TRANSACTION TOKEN',
+            error: err
+          })
+        } else {
+          req.transaction_payload = payload;
+          next();
+        }
+      });
+    } else {
+      res.statusCode = 403;
+      res.json({
+        msg: 'NOT FOUND TRANSACTION TOKEN'
+      })
+    }
   }
 };
 
+exports.authenticator = authenticator;

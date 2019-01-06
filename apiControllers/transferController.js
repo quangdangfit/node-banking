@@ -2,6 +2,7 @@ var express = require('express');
 
 var accountRepo = require('../repos/accountRepo');
 var transferRepo = require('../repos/transferRepo');
+var otpRepo = require('../repos/otpVerificationRepo');
 
 var router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
+router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
   if (!(req.body.src_account && req.body.dest_account && req.body.amount > 0)) {
     res.json({
       msg: 'Input is invalid!'
@@ -66,7 +67,13 @@ router.post('/', (req, res) => {
                       if (parseInt(req.body.fee_type) === 1)
                         dest_balance -= parseInt(process.env.TRANSFER_FEE);
                       accountRepo.updateBalance(dest_account.id, dest_balance).then((row) => {
-                        transferRepo.add(req.body)
+                        input = {
+                          'src_account': req.body.src_account,
+                          'dest_account': req.body.dest_account,
+                          'amount': req.body.amount,
+                          'fee_type': req.body.fee_type
+                        };
+                        transferRepo.add(input)
                           .then(row => {
                             res.json({
                               msg: 'Transfer is done!'

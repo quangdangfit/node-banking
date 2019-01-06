@@ -1,13 +1,10 @@
 var express = require('express');
-var authenticator = require('otplib').authenticator;
 var otpRepo = require('../repos/otpVerificationRepo');
 
 var router = express.Router();
+var authenticator = otpRepo.authenticator;
 
-authenticator.options = {step: parseInt(process.env.OTP_LIFE_TIME) || 600,};
-
-
-router.get('/', (req, res) => {
+router.post('/', (req, res) => {
   var email = req.token_payload.user.email;
   var user_display_name = req.token_payload.user.first_name + req.token_payload.user.last_name;
 
@@ -49,25 +46,6 @@ router.get('/', (req, res) => {
       })
     }
   });
-});
-
-router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
-  var transaction_token = req.body.transaction_token;
-  const isValid = authenticator.check(parseInt(req.body.otp), transaction_token);
-
-  if (!isValid) {
-    console.log(``);
-
-    res.statusCode = 404;
-    res.end('OTP is invalid');
-  } else {
-    console.log('Verify OTP successfully!');
-
-    res.statusCode = 200;
-    res.json({
-      msg: 'Verify OTP successfully!'
-    })
-  }
 });
 
 module.exports = router;
