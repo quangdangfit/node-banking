@@ -43,7 +43,8 @@ router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
   var input = req.transaction_payload;
   var min_amount = parseInt(process.env.MIN_AMOUNT) || 50000;
 
-  if (!(input.src_account && input.dest_account && input.amount > min_amount)) {
+  if (!(input.src_account && input.dest_account && input.amount > min_amount)
+    || (input.src_account === input.dest_account)) {
     res.json({
       msg: 'Input is invalid!'
     })
