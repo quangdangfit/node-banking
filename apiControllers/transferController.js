@@ -26,6 +26,7 @@ router.get('/', (req, res) => {
           })
         } else {
           res.json({
+            errorCode: 1,
             msg: 'Not allowed!'
           })
         }
@@ -86,19 +87,26 @@ router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
                             });
                           } else {
                             res.statusCode = 404;
-                            res.end('Destination Account Not Found');
+                            res.json({
+                              errorCode: 2,
+                              msg: 'Destination Account Not Found!'
+                            })
                           }
                         });
                       })
                     } else {
                       res.json({
+                        errorCode: 1,
                         msg: 'Balance is not enough!'
                       })
                     }
                   }
                 } else {
                   res.statusCode = 404;
-                  res.end('Source Account Not Found');
+                  res.json({
+                    errorCode: 2,
+                    msg: 'Source Account Not Found!'
+                  })
                 }
               }
             )
@@ -110,6 +118,7 @@ router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
         }
       } else {
         res.json({
+          errorCode: 1,
           msg: 'Cant not verify otp again!'
         })
       }
