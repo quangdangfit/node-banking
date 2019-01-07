@@ -71,7 +71,7 @@ router.post('/', otpRepo.verifyTransactionToken, (req, res) => {
                     var src_balance = parseInt(src_account.balance) - parseInt(input.amount);
                     if (parseInt(input.fee_type) === 1)
                       src_balance -= parseInt(process.env.TRANSFER_FEE);
-                    if (src_balance > 0) {
+                    if (src_balance >= 0) {
                       accountRepo.updateBalance(src_account.id, src_balance).then((row) => {
                         accountRepo.singleByAccNumber(input.dest_account).then(dest_account => {
                           if (dest_account) {
